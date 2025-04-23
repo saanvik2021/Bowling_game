@@ -1,16 +1,31 @@
-#include <iostream>
 #include "BowlingGame.h"
+#include <iostream>
 
 int main() {
     try {
         BowlingGame game;
-        game.addPlayer("Alice");
+        int numPlayers;
 
-        for (int i = 0; i < 12; ++i) game.roll("Alice", 10); // Perfect game
+        std::cout << "Enter number of players: ";
+        std::cin >> numPlayers;
 
-        std::cout << "Alice's total score: " << game.getPlayerScore("Alice") << "\n";
-    } catch (const std::exception& e) {
-        std::cerr << "Exception: " << e.what() << "\n";
+        for (int i = 0; i < numPlayers; ++i) {
+            std::string name;
+            std::cout << "\nEnter name for player " << (i + 1) << ": ";
+            std::cin >> name;
+
+            Player player(name);
+            game.inputPlayerFrames(player);
+            game.addPlayer(player);
+        }
+
+        std::cout << "\n--- Final Scores ---\n";
+        game.scoreGame();
     }
+    catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+    }
+
     return 0;
 }
+

@@ -1,54 +1,35 @@
-#include <stdexcept>
 #include "Frame.h"
 
-Frame::Frame(bool isTenth) : tenthFrame(isTenth) {}
+Frame::Frame(bool tenth) : roll1(0), roll2(0), bonus(0), isTenth(tenth) {}
 
-void Frame::addRoll(int pins) {
-    if (pins < 0 || pins > 10)
-        throw std::invalid_argument("Invalid number of pins");
-
-    if (isComplete())
-        throw std::logic_error("Frame is already complete");
-
-    rolls.push_back(pins);
-
-    // Special handling for 10th frame
-    if (tenthFrame && rolls.size() == 2 && (rolls[0] + rolls[1] < 10)) {
-        rolls.resize(2); // no third ball
+void Frame::setRolls(int r1, int r2) {
+    if (r1 < 0 || r2 < 0 || r1 > 10 || r2 > 10) {
+        throw std::invalid_argument("Invalid roll values.");
     }
-    if (tenthFrame && rolls.size() == 3) {
-        rolls.resize(3);
+    if (r1 + r2 > 10 && !isTenth && r1 != 10) {
+        throw std::invalid_argument("Frame total exceeds 10.");
     }
+    roll1 = r1;
+    roll2 = r2;
 }
 
-int Frame::getScore() const {
-    int total = 0;
-    for (int r : rolls) total += r;
-    return total;
+void Frame::setBonus(int b) {
+    if (b < 0 || b > 10) throw std::invalid_argument("Invalid bonus value.");
+    bonus = b;
+}
+
+int Frame::getRoll1() const { return roll1; }
+int Frame::getRoll2() const { return roll2; }
+int Frame::getBonus() const { return bonus; }
+
+int Frame::getFrameScore() const {
+    return roll1 + roll2 + bonus;
 }
 
 bool Frame::isStrike() const {
-    return rolls.size() > 0 && rolls[0] == 10;
+    return roll1 == 10;
 }
 
 bool Frame::isSpare() const {
-    return rolls.size() >= 2 && rolls[0] + rolls[1] == 10 && !isStrike();
-}
-
-bool Frame::isComplete() const {
-    if (!tenthFrame) {
-        return isStrike() || rolls.size() == 2;
-    } else {
-        if (rolls.size() < 2) return false;
-        if (rolls.size() == 2 && (rolls[0] + rolls[1] < 10)) return true;
-        return rolls.size() == 3;
-    }
-}
-
-std::vector<int> Frame::getRolls() const {
-    return rolls;
-}
-
-bool Frame::isTenthFrame() const {
-    return tenthFrame;
+    return roll1 < 10 && (roll1 + roll2 == 10);
 }

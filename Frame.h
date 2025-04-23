@@ -1,23 +1,26 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-#include <vector>
+#include <stdexcept>
 
 class Frame {
-public:
-    Frame(bool isTenth = false);
+private:
+    int roll1;
+    int roll2;
+    int bonus; // For 10th frame only
+    bool isTenth;
 
-    void addRoll(int pins);
-    int getScore() const;
+public:
+    Frame(bool tenth = false);
+
+    void setRolls(int r1, int r2);
+    void setBonus(int b);
+    int getRoll1() const;
+    int getRoll2() const;
+    int getBonus() const;
+    int getFrameScore() const;
     bool isStrike() const;
     bool isSpare() const;
-    bool isComplete() const;
-    std::vector<int> getRolls() const;
-    bool isTenthFrame() const;
-
-private:
-    std::vector<int> rolls;
-    bool tenthFrame;
 };
 
 #endif

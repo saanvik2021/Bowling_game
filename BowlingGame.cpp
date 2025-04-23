@@ -1,34 +1,41 @@
-#include <stdexcept>
 #include "BowlingGame.h"
+#include <iostream>
 
-BowlingGame::BowlingGame() {}
-
-void BowlingGame::addPlayer(const std::string& name) {
-    players.emplace_back(name);
+void BowlingGame::addPlayer(const Player& player) {
+    players.push_back(player);
 }
 
-void BowlingGame::roll(const std::string& playerName, int pins) {
-    for (auto& p : players) {
-        if (p.getName() == playerName) {
-            p.roll(pins);
-            return;
+void BowlingGame::inputPlayerFrames(Player& player) {
+    for (int i = 0; i < 10; ++i) {
+        int r1, r2 = 0, bonus = 0;
+        bool isTenth = (i == 9);
+
+        std::cout << "Frame " << (i + 1) << " - Roll 1: ";
+        std::cin >> r1;
+
+        if (r1 != 10 || isTenth) {
+            std::cout << "Frame " << (i + 1) << " - Roll 2: ";
+            std::cin >> r2;
         }
-    }
-    throw std::invalid_argument("Player not found");
-}
 
-int BowlingGame::getPlayerScore(const std::string& name) const {
-    for (const auto& p : players) {
-        if (p.getName() == name) {
-            return p.getTotalScore();
+        if (isTenth && (r1 == 10 || (r1 + r2) == 10)) {
+            std::cout << "Frame " << (i + 1) << " - Bonus Roll: ";
+            std::cin >> bonus;
         }
+
+        Frame frame(isTenth);
+        frame.setRolls(r1, r2);
+        if (isTenth) {
+            frame.setBonus(bonus);
+        }
+
+        player.addFrame(frame);
     }
-    throw std::invalid_argument("Player not found");
 }
 
-Player BowlingGame::getPlayer(const std::string& name) const {
-    for (const auto& p : players) {
-        if (p.getName() == name) return p;
+void BowlingGame::scoreGame() const {
+    for (const Player& player : players) {
+        std::cout << "Player: " << player.getName()
+                  << " | Total Score: " << player.calculateScore() << std::endl;
     }
-    throw std::invalid_argument("Player not found");
 }
